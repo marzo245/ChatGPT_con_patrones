@@ -1,0 +1,7 @@
+com\diego\chatgpt\strategy\ValidatedStrategy.class
+com\diego\chatgpt\strategy\MessageStrategy.class
+com\diego\chatgpt\handler\ChatHandler.class
+com\diego\chatgpt\strategy\SimpleStrategy.class
+com\diego\chatgpt\App.class
+com\diego\chatgpt\factory\StrategyFactory.class
+com\diego\chatgpt\service\OpenAIClient.class

@@ -1,0 +1,7 @@
+D:\Documentos\GitHub\ChatGPT_con_patrones\src\main\java\com\diego\chatgpt\App.java
+D:\Documentos\GitHub\ChatGPT_con_patrones\src\main\java\com\diego\chatgpt\handler\ChatHandler.java
+D:\Documentos\GitHub\ChatGPT_con_patrones\src\main\java\com\diego\chatgpt\strategy\ValidatedStrategy.java
+D:\Documentos\GitHub\ChatGPT_con_patrones\src\main\java\com\diego\chatgpt\factory\StrategyFactory.java
+D:\Documentos\GitHub\ChatGPT_con_patrones\src\main\java\com\diego\chatgpt\strategy\SimpleStrategy.java
+D:\Documentos\GitHub\ChatGPT_con_patrones\src\main\java\com\diego\chatgpt\strategy\MessageStrategy.java
+D:\Documentos\GitHub\ChatGPT_con_patrones\src\main\java\com\diego\chatgpt\service\OpenAIClient.java
