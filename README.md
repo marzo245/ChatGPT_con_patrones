@@ -1,0 +1,1 @@
+# ChatGPT_con_patrones
