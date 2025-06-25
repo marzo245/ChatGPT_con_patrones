@@ -31,6 +31,7 @@ Mensaje original → PromptCleaner → PromptEnhancer → GrammarCorrector → M
 Entrada: "hola chat gpt dime cual es la capital de japon"
 Salida:  "¿Cuál es la capital de Japón?"
 ```ctory** y **Composite** para seleccionar y procesar diferentes formas de mensajes antes de enviarlos a ChatGPT, y se despliega como una función **serverless en AWS Lambda**, accesible vía **API Gateway**.
+```
 
 ## 🏗️ Arquitectura y Patrones de Diseño
 
