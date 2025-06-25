@@ -294,5 +294,3 @@ Puedes usar, estudiar, modificar y redistribuir el código bajo los términos de
 Estudiante de Ingeniería de Sistemas
 🚀 Explorando arquitecturas serverless, patrones de diseño y NLP en Java.
 
-```
-
