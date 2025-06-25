@@ -1,21 +1,72 @@
-# 🧠 ChatGPT_con_patrones
+# 🧠 ChatGPT con Patrones de Diseño
 
-Este proyecto implementa una API REST en Java que expone una función de chat mediante integración con **OpenAI (ChatGPT)**. Aplica los patrones de diseño **Strategy** y **Factory** para seleccionar diferentes formas de procesar los mensajes antes de enviarlos a ChatGPT, y se despliega como una función **serverless en AWS Lambda**, accesible vía **API Gateway**.
+Este proyecto implementa una **API REST en Java** que expone una función de chat mediante integración con **OpenAI (ChatGPT)**. Aplica los patrones de diseño **Strategy*## ✨ Pipeline de mejoras de prompt (Modo Validado)
+
+El modo `validado` aplica un pipeline de mejoras a través de `PromptProcessorService`:
+
+### 🧹 **1. PromptCleaner**
+- ✅ Eliminación de palabras irrelevantes: "hola", "chat", "gpt", "por favor", "una pregunta"
+- ✅ Limpieza de espacios múltiples y caracteres innecesarios
+- ✅ Normalización del texto de entrada
+
+### 🎯 **2. PromptEnhancer**
+- ✅ Reestructuración automática del mensaje en forma de pregunta clara
+- ✅ Capitalización automática de la primera letra
+- ✅ Añade signos de interrogación cuando faltan
+- ✅ Mejora la estructura gramatical básica
+
+### 📝 **3. GrammarCorrector**
+- ✅ Corrección gramatical externa vía [LanguageTool API](https://api.languagetool.org/v2/)
+- ✅ Corrección específica para idioma español
+- ✅ Manejo resiliente de errores (continúa si falla la API)
+- ✅ Aplicación inteligente de sugerencias de corrección
+
+### 🔄 **Flujo del Pipeline**
+```
+Mensaje original → PromptCleaner → PromptEnhancer → GrammarCorrector → Mensaje optimizado
+```
+
+**Ejemplo de transformación:**
+```
+Entrada: "hola chat gpt dime cual es la capital de japon"
+Salida:  "¿Cuál es la capital de Japón?"
+```ctory** y **Composite** para seleccionar y procesar diferentes formas de mensajes antes de enviarlos a ChatGPT, y se despliega como una función **serverless en AWS Lambda**, accesible vía **API Gateway**.
+
+## 🏗️ Arquitectura y Patrones de Diseño
+
+![Diagrama de Clases](Captura%20de%20pantalla%202025-06-25%20160354.png)
+
+### 🔄 **Strategy Pattern**
+- **Interface**: `MessageStrategy`
+- **Implementaciones**: `SimpleStrategy` y `ValidatedStrategy`
+- **Beneficio**: Permite intercambiar algoritmos de procesamiento de mensajes en tiempo de ejecución
+
+### 🏭 **Factory Pattern**
+- **Clase**: `StrategyFactory`
+- **Función**: Crea instancias de estrategias basándose en el parámetro `mode`
+- **Beneficio**: Desacopla la creación de objetos del código cliente
+
+### 🧩 **Composite Pattern**
+- **Clase**: `PromptProcessorService`
+- **Componentes**: `PromptCleaner`, `PromptEnhancer`, `GrammarCorrector`
+- **Beneficio**: Combina múltiples procesadores en un solo servicio para mejorar la calidad del texto
 
 ---
 
 ## 🚀 Características
 
-- ✅ API REST que recibe peticiones POST con mensajes.
-- ✅ Comunicación con ChatGPT usando `gpt-3.5-turbo`.
-- ✅ Patrones de diseño aplicados: **Strategy** y **Factory**.
-- ✅ Procesamiento inteligente de mensajes con validación, limpieza y mejora.
-- ✅ Corrección gramatical vía **API pública de LanguageTool** (ligero).
-- ✅ Modularizado con `PromptProcessorService`.
-- ✅ Desplegado en **AWS Lambda** usando Java 17.
-- ✅ Integración con **API Gateway** para exponer un endpoint público.
+- ✅ **API REST** que recibe peticiones POST con mensajes.
+- ✅ **Comunicación con ChatGPT** usando `gpt-3.5-turbo`.
+- ✅ **Patrones de diseño aplicados**: **Strategy**, **Factory** y **Composite**.
+- ✅ **Procesamiento inteligente** de mensajes con validación, limpieza y mejora.
+- ✅ **Corrección gramatical** vía **API pública de LanguageTool** (ligero).
+- ✅ **Modularizado** con `PromptProcessorService`.
+- ✅ **Desplegado en AWS Lambda** usando Java 17.
+- ✅ **Integración con API Gateway** para exponer un endpoint público.
+- ✅ **Arquitectura escalable** y mantenible con separación de responsabilidades.
 
 ---
+
 
 ## 🧬 Ciclo de vida de una petición
 
@@ -26,15 +77,42 @@ API Gateway (POST /chat)
     ↓
 Lambda (ChatHandler.java)
     ↓
-↪ Selección de estrategia (simple o validado)
+↪ StrategyFactory selecciona estrategia según 'mode'
     ↓
-↪ Procesamiento del mensaje con PromptProcessorService:
-     → Limpieza → Mejora semántica → Corrección gramatical (API externa)
+↪ Si mode="validado":
+    ↪ PromptProcessorService ejecuta pipeline:
+        → PromptCleaner (limpieza)
+        → PromptEnhancer (mejora estructura)
+        → GrammarCorrector (corrección gramatical)
     ↓
-↪ Envío a OpenAI (ChatGPT)
+↪ Si mode="simple": mensaje sin procesar
+    ↓
+↪ OpenAIClient envía a ChatGPT (gpt-3.5-turbo)
     ↓
 Respuesta generada → Devuelta al cliente en formato JSON
-````
+```
+
+## 🎯 Ventajas del diseño
+
+### **🔧 Mantenibilidad**
+- Código organizado en paquetes por responsabilidad
+- Separación clara entre lógica de negocio y infraestructura
+- Fácil localización y corrección de errores
+
+### **🚀 Escalabilidad**
+- Nuevas estrategias se agregan sin modificar código existente
+- Pipeline de procesamiento extensible
+- Arquitectura serverless que escala automáticamente
+
+### **🧪 Testabilidad**
+- Cada componente puede probarse independientemente
+- Interfaces bien definidas facilitan el mocking
+- Cobertura de pruebas granular por funcionalidad
+
+### **🔄 Reutilización**
+- Componentes modulares reutilizables en otros contextos
+- Factory pattern permite intercambiar implementaciones
+- Pipeline de procesamiento configurable`
 
 ---
 
@@ -137,34 +215,51 @@ Content-Type: application/json
 src/
 └── main/
     └── java/com/diego/chatgpt/
+        ├── App.java
         ├── handler/
         │   └── ChatHandler.java
         ├── strategy/
         │   ├── MessageStrategy.java
         │   ├── SimpleStrategy.java
-        │   └── ValidatedStrategy.java
+        │   ├── ValidatedStrategy.java
+        │   └── mejoras/
+        │       ├── PromptProcessorService.java
+        │       ├── PromptCleaner.java
+        │       ├── PromptEnhancer.java
+        │       └── GrammarCorrector.java
         ├── factory/
         │   └── StrategyFactory.java
-        ├── service/
-        │   └── OpenAIClient.java
-        └── prompt/
-            ├── PromptCleaner.java
-            ├── PromptEnhancer.java
-            ├── GrammarCorrectorHttp.java
-            └── PromptProcessorService.java
+        └── service/
+            └── OpenAIClient.java
 ```
 
 ---
 
 ## 🧠 Patrones de diseño aplicados
 
-### 🧩 Strategy
+### 🔄 **Strategy Pattern**
+Permite definir múltiples comportamientos de procesamiento (`SimpleStrategy`, `ValidatedStrategy`) y elegir uno en tiempo de ejecución según el parámetro `mode`.
 
-Permite definir múltiples comportamientos de procesamiento (`SimpleStrategy`, `ValidatedStrategy`) y elegir uno en tiempo de ejecución.
+**Ventajas:**
+- Facilita agregar nuevas estrategias sin modificar código existente
+- Permite cambiar algoritmos dinámicamente
+- Cumple con el principio Abierto/Cerrado
 
-### 🏭 Factory
+### 🏭 **Factory Pattern**
+La clase `StrategyFactory` instancia la estrategia adecuada según el parámetro `mode` que recibe la petición.
 
-Instancia la estrategia adecuada según el parámetro `mode` que recibe la petición.
+**Ventajas:**
+- Centraliza la lógica de creación de objetos
+- Desacopla el cliente de las clases concretas
+- Facilita el mantenimiento y testing
+
+### 🧩 **Composite Pattern**
+`PromptProcessorService` actúa como un compuesto que combina múltiples procesadores (`PromptCleaner`, `PromptEnhancer`, `GrammarCorrector`) en un flujo unificado.
+
+**Ventajas:**
+- Trata objetos individuales y composiciones de manera uniforme
+- Facilita agregar nuevos procesadores al pipeline
+- Mejora la modularidad y reutilización del código
 
 ---
 
